@@ -76,11 +76,11 @@ class LoanSerializer(serializers.ModelSerializer):
         many = True
 
 
-class InvestimentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Investiment
-        fields = '__all__'
-        many = True
+# class InvestimentSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Investiment
+#         fields = '__all__'
+#         many = True
 
 
 class DepositSerializer(serializers.Serializer):

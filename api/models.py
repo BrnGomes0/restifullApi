@@ -88,8 +88,8 @@ class Card(models.Model):
 
 
 class Transfer(models.Model):
-    origin_id_account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='conta_origem')
-    account_id_destination = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='conta_destino')
+    origin_id_account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='account_origin')
+    account_id_destination = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='account_destinantion')
     value = models.FloatField()
     obs = models.TextField(max_length=100, blank=True)
     type_transfer = models.CharField(max_length=20)
@@ -98,7 +98,7 @@ class Transfer(models.Model):
 
 class Movimentation(models.Model):
     id = models.AutoField(primary_key=True)
-    account_id = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account_id = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='account_id_movimentation')
     transfer = models.ForeignKey(Transfer, on_delete=models.CASCADE)
     movimentation_value = models.FloatField()
     movimentation_obs = models.TextField(max_length=100)
@@ -106,7 +106,7 @@ class Movimentation(models.Model):
 
 class Loan(models.Model):
     id = models.AutoField(primary_key=True)
-    account_id = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account_id = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='id_loan')
     loan_value = models.FloatField(blank=False, null=False)
     loan_interest = models.FloatField(blank=False, null=False)
     loan_quantity_parcelas = models.IntegerField(blank=False, null=False)
@@ -114,15 +114,15 @@ class Loan(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
 
-class Investiment(models.Model):
-    id = models.AutoField(primary_key=True)
-    account_id = models.ForeignKey(Account, on_delete=models.CASCADE)
-    investment_contribution = models.FloatField(blank=False, null=False)
-    investment_term = models.DateField(blank=True)
-    investment_obs = models.TextField(max_length=100)
+# class Investiment(models.Model):
+#     id = models.AutoField(primary_key=True)
+#     account_id = models.ForeignKey(Account, on_delete=models.CASCADE)
+#     investment_contribution = models.FloatField(blank=False, null=False)
+#     investment_term = models.DateField(blank=True)
+#     investment_obs = models.TextField(max_length=100)
 
 class Extract(models.Model):
-    account_id = models.ForeignKey('Account', on_delete=models.CASCADE)
+    account_id = models.ForeignKey(Account, on_delete=models.CASCADE)
     transaction_date = models.DateTimeField(auto_now_add=True)
     transaction_type = models.CharField(max_length=20)
     value = models.DecimalField(max_digits=10, decimal_places=2)

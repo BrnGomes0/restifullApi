@@ -20,7 +20,7 @@ from rest_framework import (
     generics
 )
 from rest_framework_simplejwt import authentication as authenticationJWT
-from .serializers import UsuarioSerializer
+from .serializers import UserSerializer
 from .permissions import IsCreationOrIsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -234,9 +234,9 @@ class LoanView(ModelViewSet):
     serializer_class = LoanSerializer
 
 
-class InvestimentView(ModelViewSet):
-    queryset = Investiment.objects.all()
-    serializer_class = InvestimentSerializer
+# class InvestimentView(ModelViewSet):
+#     queryset = Investiment.objects.all()
+#     serializer_class = InvestimentSerializer
 
 
 class TransferView(ModelViewSet):
@@ -248,7 +248,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .models import Extract, Movimentation, Loan
-from .serializers import ExtratoSerializer
+from .serializers import ExtractSerializer
 
 class ExtractView(APIView):
     permission_classes = [IsAuthenticated]
