@@ -11,5 +11,5 @@ urlpatterns = [
     path('', include(router.urls)),
     path('create', views.CreateUserView.as_view(), name='create'),
     path('me/', views.ManagerUserAPiView.as_view(), name='me'),
-    path('extrato/', views.ExtratoView.as_view(), name='extrato'),
+    path('extract/', views.ExtractView.as_view(), name='extract'),
 ]

@@ -98,16 +98,14 @@ class AccountView(ModelViewSet):
                 account_balance=balance,
                 account_type=account_type 
             )
-
             account.balance = decimal.Decimal(0)
             account.save()
-
 
             return Response({'message': 'created'}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    @action(methods=['POST'], detail=True, url_path='sacar')
-    def sacar(self, request, pk=None):
+    @action(methods=['POST'], detail=True, url_path='to_withdraw')
+    def to_withdraw(self, request, pk=None):
         account = Account.objects.filter(id=pk).first()
 
         if account:
@@ -127,8 +125,8 @@ class AccountView(ModelViewSet):
 
         return Response({'message': "Account not found"}, status=status.HTTP_404_NOT_FOUND)
         
-    @action(methods=['POST'], detail=True, url_path='depositar')
-    def depositar(self, request, pk=None):
+    @action(methods=['POST'], detail=True, url_path='deposit')
+    def deposit(self, request, pk=None):
         account = Account.objects.filter(id=pk).first()
         serializer_recebed = DepositSerializer(data=request.data)
 
@@ -148,8 +146,8 @@ class AccountView(ModelViewSet):
             return Response({'message': "Account not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
-    @action(methods=['POST'], detail=True, url_path='transferir')
-    def transferir(self, request, pk=None):
+    @action(methods=['POST'], detail=True, url_path='transfer')
+    def transfer(self, request, pk=None):
         target_account = get_object_or_404(Account, id=pk)
 
         source_account = self.request.user.account_set.first()
@@ -180,8 +178,8 @@ class AccountView(ModelViewSet):
             return Response({'message': 'Accounts not found'}, status=status.HTTP_404_NOT_FOUND) 
         
 
-    @action(methods=['POST'], detail=True, url_path='emprestar')
-    def emprestar(self, request, pk=None):
+    @action(methods=['POST'], detail=True, url_path='to_loan')
+    def to_loan(self, request, pk=None):
         account = Account.objects.filter(id=pk).first()
 
         if account:
@@ -194,7 +192,7 @@ class AccountView(ModelViewSet):
                 observation = serializer.validated_data.get('loan_observation', '')
 
                 with transaction.atomic():
-                    account.conta_saldo = float(account.account_balance) + float(loan_value)
+                    account.account_balance = float(account.account_balance) + float(loan_value)
                     account.save()
 
                     Loan.objects.create(
@@ -225,8 +223,7 @@ class MovimentationView(ModelViewSet):
         user = self.request.user
         trasfers = Transfer.objects.filter(account_id_origin__cliente_id=user) | Transfer.objects.filter(account_id_destino__cliente_id=user)
         withdrawals = Movimentation.objects.filter(movement_type='withdraw', account_id__cliente_id=user)
-        deposits = Movimentation
-        .objects.filter(movement_type='deposit', account_id__cliente_id=user)
+        deposits = Movimentation.objects.filter(movement_type='deposit', account_id__cliente_id=user)
 
         queryset = trasfers | withdrawals | deposits
         return queryset
@@ -253,7 +250,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Extract, Movimentation, Loan
 from .serializers import ExtratoSerializer
 
-class ExtratoView(APIView):
+class ExtractView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -265,9 +262,9 @@ class ExtratoView(APIView):
 
         for loan in loans:
             if not last_data_extract or loan.created_at > last_data_extract.created_at:
-                Extract.objects.create(conta_id=loan.account_id, tipo_transacao='Emprestimo', valor=loan.loan_value)
+                Extract.objects.create(account_id=loan.account_id, type_transition='Loan', value=loan.loan_value)
 
-        exract = Extract.objects.filter(conta_id__cliente_id=user)
+        exract = Extract.objects.filter(account_id__cliente_id=user)
 
         exract_serializaded = ExtractSerializer(exract, many=True).data
 
