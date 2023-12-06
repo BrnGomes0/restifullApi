@@ -51,8 +51,8 @@ class AccountSerializer(serializers.ModelSerializer):
 
 class AccountDetailSerializer(serializers.ModelSerializer):
     class Meta(AccountSerializer.Meta):   
-        fields = ['id', 'account_balance', 'account_type', 'created_at',]
-        read_only_fields = AccountSerializer.Meta.read_only_fields + ['id', 'account_balance', 'account_type', 'created_at',]
+        fields = ['id', 'account_balance', 'account_type','account_number','account_agency',  'created_at',]
+        read_only_fields = AccountSerializer.Meta.read_only_fields + ['id', 'account_balance', 'account_type', 'created_at','account_number', 'account_agency' ]
 
 
 class CardSerializer(serializers.ModelSerializer):

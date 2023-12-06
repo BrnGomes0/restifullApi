@@ -65,9 +65,9 @@ class Contact(models.Model):
 class Account(models.Model):
     id = models.AutoField(primary_key=True)
     client_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    account_agency = models.CharField(max_length=4, blank=False, null=False, default=9090)
+    account_agency = models.CharField(max_length=4, default=1210)
     account_number = models.CharField(max_length=8, blank=False, null=False, unique=True)
-    account_type = models.CharField(max_length=20, blank=False, null=False, default='Standart')
+    account_type = models.CharField(max_length=20, blank=False, null=False, default='Elit')
     account_balance = models.FloatField(max_length=20, default=0.00, null=False, blank=False)
     created_at = models.DateField(default=timezone.now)
 
@@ -113,13 +113,6 @@ class Loan(models.Model):
     loan_obs = models.TextField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
 
-
-# class Investiment(models.Model):
-#     id = models.AutoField(primary_key=True)
-#     account_id = models.ForeignKey(Account, on_delete=models.CASCADE)
-#     investment_contribution = models.FloatField(blank=False, null=False)
-#     investment_term = models.DateField(blank=True)
-#     investment_obs = models.TextField(max_length=100)
 
 class Extract(models.Model):
     account_id = models.ForeignKey(Account, on_delete=models.CASCADE)

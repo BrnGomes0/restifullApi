@@ -73,7 +73,7 @@ class AccountView(ModelViewSet):
     def get_queryset(self):
         queryset = self.queryset
         return queryset.filter(
-            cliente_id=self.request.user
+            client_id=self.request.user
         ).order_by('-created_at').distinct()
     
     def get_serializer_class(self):
@@ -85,12 +85,14 @@ class AccountView(ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            agency = '9090'
+            agency = ''
             number = ''
             balance = 0
-            account_type = 'Standart'
+            account_type = 'Elit'
             for i in range(8):
                 number += str(random.randint(0,9))
+            for i in range(4):
+                agency += str(random.randint(0,9))
             account = Account(
                 client_id=self.request.user,
                 account_agency=agency,
@@ -112,7 +114,7 @@ class AccountView(ModelViewSet):
             serializer_recebed = WithdrawSerializer(data=request.data)
             if serializer_recebed.is_valid():
                 valueWithDraw = decimal.Decimal(serializer_recebed.validated_data.get('value'))
-                balance = decimal.Decimal(Account.account_balance)
+                balance = decimal.Decimal(account.account_balance)
 
                 if balance >= valueWithDraw:
                     new_balance = balance - valueWithDraw
@@ -221,9 +223,9 @@ class MovimentationView(ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        trasfers = Transfer.objects.filter(account_id_origin__cliente_id=user) | Transfer.objects.filter(account_id_destino__cliente_id=user)
-        withdrawals = Movimentation.objects.filter(movement_type='withdraw', account_id__cliente_id=user)
-        deposits = Movimentation.objects.filter(movement_type='deposit', account_id__cliente_id=user)
+        trasfers = Transfer.objects.filter(account_id_origin__client_id=user) | Transfer.objects.filter(account_id_destino__client_id=user)
+        withdrawals = Movimentation.objects.filter(movement_type='withdraw', account_id__client_id=user)
+        deposits = Movimentation.objects.filter(movement_type='deposit', account_id__client_id=user)
 
         queryset = trasfers | withdrawals | deposits
         return queryset
@@ -256,15 +258,15 @@ class ExtractView(APIView):
     def get(self, request):
         user = request.user
 
-        loans = Loan.objects.filter(account_id__cliente_id=user)
+        loans = Loan.objects.filter(account_id__client_id=user)
 
-        last_data_extract = Extract.objects.filter(account_id__cliente_id=user).order_by('-created_at').first()
+        last_data_extract = Extract.objects.filter(account_id__client_id=user).order_by('-created_at').first()
 
         for loan in loans:
             if not last_data_extract or loan.created_at > last_data_extract.created_at:
                 Extract.objects.create(account_id=loan.account_id, type_transition='Loan', value=loan.loan_value)
 
-        exract = Extract.objects.filter(account_id__cliente_id=user)
+        exract = Extract.objects.filter(account_id__client_id=user)
 
         exract_serializaded = ExtractSerializer(exract, many=True).data
 
